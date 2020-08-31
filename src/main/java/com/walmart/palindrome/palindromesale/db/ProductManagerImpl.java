@@ -17,8 +17,9 @@ public class ProductManagerImpl implements ProductManager{
 
     @Override
     public List<Product> getProducts(String key) {
+        Criteria criteria = new Criteria();
 
-        Criteria idCriteria = Criteria.where("id").regex(toLikeRegex(key));
+        Criteria idCriteria = getLongCriteria(key);
         Criteria brandCriteria = Criteria.where("brand").regex(toLikeRegex(key));
         Criteria descCriteria = Criteria.where("description").regex(toLikeRegex(key));
 
@@ -26,6 +27,15 @@ public class ProductManagerImpl implements ProductManager{
         List<Product> productsList = mongoTemplate.find(query, Product.class);
 
         return productsList;
+    }
+
+    private Criteria getLongCriteria(String key) {
+        try{
+            return Criteria.where("id").is(Long.decode(key));
+        }catch(NumberFormatException nfe) {
+
+            return new Criteria();
+        }
     }
 
     private String toLikeRegex(String source) {

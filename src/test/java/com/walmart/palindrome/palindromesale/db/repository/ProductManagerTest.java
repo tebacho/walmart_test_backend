@@ -46,7 +46,7 @@ public class ProductManagerTest {
         verify(mongoTemplate,times(1)).find(queryArgumentCaptor.capture(),eq(Product.class));
         Query query = queryArgumentCaptor.getValue();
 
-        assertEquals("Query: { \"$or\" : [{ \"id\" : { \"$regularExpression\" : { \"pattern\" : \"1\", \"options\" : \"\"}}}, { \"brand\" : { \"$regularExpression\" : { \"pattern\" : \"1\", \"options\" : \"\"}}}, { \"description\" : { \"$regularExpression\" : { \"pattern\" : \"1\", \"options\" : \"\"}}}]}, Fields: {}, Sort: {}", query.toString());
+        assertEquals("Query: { \"$or\" : [{ \"id\" : 1}, { \"brand\" : { \"$regularExpression\" : { \"pattern\" : \"1\", \"options\" : \"\"}}}, { \"description\" : { \"$regularExpression\" : { \"pattern\" : \"1\", \"options\" : \"\"}}}]}, Fields: {}, Sort: {}", query.toString());
     }
 
     @Test
@@ -60,7 +60,21 @@ public class ProductManagerTest {
         verify(mongoTemplate,times(1)).find(queryArgumentCaptor.capture(),eq(Product.class));
         Query query = queryArgumentCaptor.getValue();
 
-        assertEquals("Query: { \"$or\" : [{ \"id\" : { \"$regularExpression\" : { \"pattern\" : \"bran\", \"options\" : \"\"}}}, { \"brand\" : { \"$regularExpression\" : { \"pattern\" : \"bran\", \"options\" : \"\"}}}, { \"description\" : { \"$regularExpression\" : { \"pattern\" : \"bran\", \"options\" : \"\"}}}]}, Fields: {}, Sort: {}", query.toString());
+        assertEquals("Query: { \"$or\" : [{}, { \"brand\" : { \"$regularExpression\" : { \"pattern\" : \"bran\", \"options\" : \"\"}}}, { \"description\" : { \"$regularExpression\" : { \"pattern\" : \"bran\", \"options\" : \"\"}}}]}, Fields: {}, Sort: {}", query.toString());
+    }
+
+    @Test
+    public void getProducts_findLetter_returnProductList(){
+
+        List<Product> found = new ArrayList<>();
+        found.add(createProduct(1));
+        when(mongoTemplate.find(ArgumentMatchers.any(),eq(Product.class))).thenReturn(found);
+        List<Product> productList = productManager.getProducts("bran");
+
+        verify(mongoTemplate,times(1)).find(queryArgumentCaptor.capture(),eq(Product.class));
+        Query query = queryArgumentCaptor.getValue();
+
+        assertEquals("Query: { \"$or\" : [{}, { \"brand\" : { \"$regularExpression\" : { \"pattern\" : \"bran\", \"options\" : \"\"}}}, { \"description\" : { \"$regularExpression\" : { \"pattern\" : \"bran\", \"options\" : \"\"}}}]}, Fields: {}, Sort: {}", query.toString());
     }
 
     private Product createProduct(int key) {
