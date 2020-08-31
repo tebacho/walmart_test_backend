@@ -18,11 +18,11 @@ public class ProductManagerImpl implements ProductManager{
     @Override
     public List<Product> getProducts(String key) {
 
-        Query query = new Query();
-        query.addCriteria(Criteria.where("id").regex(toLikeRegex(key)));
-        query.addCriteria(Criteria.where("brand").regex(toLikeRegex(key)));
-        query.addCriteria(Criteria.where("description").regex(toLikeRegex(key)));
+        Criteria idCriteria = Criteria.where("id").regex(toLikeRegex(key));
+        Criteria brandCriteria = Criteria.where("brand").regex(toLikeRegex(key));
+        Criteria descCriteria = Criteria.where("description").regex(toLikeRegex(key));
 
+        Query query = new Query(new Criteria().orOperator(idCriteria,brandCriteria,descCriteria));
         List<Product> productsList = mongoTemplate.find(query, Product.class);
 
         return productsList;
